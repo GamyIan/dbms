@@ -89,3 +89,90 @@ VALUES
 (8, 8, '2022-04-10', 1008, '2022-04-24', 108),
 (9, 9, '2024-01-05', 1009, '2024-01-19', 109),
 (10, 10, '2023-07-01', 1010, '2023-07-15', 110);
+
+
+/* Q1. List all members who joined after January 1, 2023 */
+select * from Member
+	where MembershipDate > '01-01-2003';
+
+/* Q2. Display the names and phone numbers of members who live in 'New York' */
+select Name,Phone from Member where Address like '%New York%';
+
+/* Q3. Show the list of all books published after the year 2020 */
+select * from Book
+	where year(YearOfPublication) > 2020
+
+/* Q4. Find all books published by 'Penguin Publishers' */
+select * from Book where Publisher like '%Penguin Publishers%';
+
+/* Q5. List all authors whose names start with 'A' */
+select * from Author where Name like 'A%';
+
+/* Q6. Count the total number of members in the library */
+select count(*) from Member;
+
+/* Q7. Find the oldest book (minimum YearOfPublication) in the Library */
+select * from Book where year(YearOfPublication) = (select min(year(YearOfPublication)) from Book);
+
+/* <---- Multi Table Queries -----> */
+
+/* Q11. List the names of members who have borrowed at least one book */
+select distinct m.Name
+	from Member m, Borrow bw
+	where bw.MemberID=m.MemberID
+	group by m.MemberID,m.Name
+	having count(*) >= 1
+
+/* For Not borrowed */
+select MemberID from Member Except (select MemberID from Borrow)
+
+/* Q12. Show the book titles and their authors */
+select b.Title, a.Name
+	from Book b, Author a, BookAuthor ba
+	where b.ISBN=ba.ISBN
+	and a.AuthorID=ba.AuthorID
+
+/* Q13. Find the total number of books written by each author */
+select a.Name, count(*) from Author a join BookAuthor ba on a.AuthorID=ba.AuthorID
+	group by ba.AuthorID, a.Name
+
+/* Q14. List all members who borrowed the book titled 'Data Science Basics' */
+select * from Member m,Borrow bw, Book b 
+	where m.MemberID=bw.MemberID
+	and b.ISBN=bw.ISBN
+	and b.Title='Data Science Basics'
+
+/* Q15. Display the names of members along with the titles of books they have borrowed */
+select m.Name, b.Title from Member m, Book b, Borrow bw
+	where m.MemberID=bw.MemberID
+	and b.ISBN=bw.ISBN
+	group by m.MemberID,m.Name,b.Title
+
+/* Q16. Find all books (ISBN, Title) that have more than one author. */
+select ba.ISBN, b.Title, count(*)
+	from Book b, Author a, BookAuthor ba
+	where b.ISBN=ba.ISBN
+	and a.AuthorID=ba.AuthorID
+	group by ba.ISBN,b.Title
+	having count(*) >1
+
+/* Q18. List all members who have borrowed more than 3 books */
+select m.Name, count(*) 'Books_Borrowed' from Member m, Book b, Borrow bw
+	where m.MemberID=bw.MemberID
+	and b.ISBN=bw.ISBN
+	group by m.MemberID,m.Name
+	having count(*)>3
+
+/* Q19. Find the names of authors who have written books that were borrowed more than 10 times. */
+
+select a.Name, count(*) 'Books_Borrowed' from Author a, BookAuthor ba, Book b,Borrow	bw
+	where a.AuthorID=ba.AuthorID
+	and b.ISBN=ba.ISBN
+	and bw.ISBN=ba.ISBN
+	group by ba.AuthorID, a.Name
+	having count(*) > 10
+
+/* 20. Display the most borrowed book title and how many times it was borrowed */
+select 
+
+
