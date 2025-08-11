@@ -172,15 +172,10 @@ select mm.Name, avg(c.Books_Borrowed)
 	group by mm.MemberID,mm.Name
 
 /* Q13 - Retrive the latest borrowed book for each member */
-select m.Name, b.Title 'Latest_Borrowed'
-	from Member m, Book b, Borrow bw
-	where m.MemberID=bw.MemberID
-	and b.ISBN=bw.ISBN
-	group by m.MemberID,m.Name
-	having bw.BorrowDate = (select max(bw.BorrowDate)
-		from Member m, Book b, Borrow bw
-		where m.MemberID=bw.MemberID
-		and b.ISBN=bw.ISBN
-		group by m.MemberID,m.Name)
+-- Correlated Subquery
+select bw.MemberID, b.Title, bw.BorrowDate
+	from Borrow bw, Book b
+	where bw.BorrowDate = (select max(c.BorrowDate) from Borrow c where c.MemberID=bw.MemberID)
+	and bw.ISBN=b.ISBN
 
 	
