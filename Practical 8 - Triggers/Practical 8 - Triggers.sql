@@ -49,7 +49,11 @@ select * from orders;
 
 create trigger t1_order_insert on orders
 	for insert
-		as update products set products.qty=products.qty-inserted.qty
+		as	update orders set orders.amt=products.rate*orders.qty
+				from products,orders
+				where products.pid=orders.pid
+
+			update products set products.qty=products.qty-inserted.qty
 			from products,inserted 
 			where products.pid=inserted.pid
 
@@ -74,10 +78,11 @@ INSERT INTO orders (orderno, pid, qty, empno, amt) VALUES
 (1001, 1, 2, 101, 2000)
 
 delete from orders
-	where orderno=1001
+	where orderno>=1000
 
-select * from salesreps
-select * from products
+select * from orders;
+select * from salesreps;
+select * from products;
 
 drop trigger t1_order_insert;
 drop trigger t2_order_delete;
@@ -102,3 +107,4 @@ create trigger t3_empEmail_insert on salesreps
 			from salesreps
 
 drop trigger t3_empEmail_insert;
+
